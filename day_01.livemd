@@ -1,0 +1,152 @@
+# Day 01
+
+```elixir
+Mix.install([
+  {:kino_aoc, "~> 0.1"}
+])
+```
+
+## Input
+
+<!-- livebook:{"attrs":{"assign_to":"raw_input","day":"1","session_secret":"AOC_SESSION","year":"2023"},"chunks":null,"kind":"Elixir.KinoAOC.HelperCell","livebook_object":"smart_cell"} -->
+
+```elixir
+{:ok, raw_input} =
+  KinoAOC.download_puzzle("2023", "1", System.fetch_env!("LB_AOC_SESSION"))
+```
+
+```elixir
+parse = fn input ->
+  input
+  |> String.trim()
+  |> String.split("\n")
+end
+```
+
+```elixir
+input = parse.(raw_input)
+```
+
+```elixir
+input_example =
+  parse.("""
+  1abc2
+  pqr3stu8vwx
+  a1b2c3d4e5f
+  treb7uchet
+  """)
+```
+
+```elixir
+input_example_2 =
+  parse.("""
+  two1nine
+  eightwothree
+  abcone2threexyz
+  xtwone3four
+  4nineeightseven2
+  zoneight234
+  7pqrstsixteen
+  """)
+```
+
+## Utils
+
+```elixir
+defmodule Util do
+  def parse_number(input) do
+    {num, _leftovers} = Integer.parse(input)
+    num
+  end
+
+  def is_digit("0"), do: true
+  def is_digit("1"), do: true
+  def is_digit("2"), do: true
+  def is_digit("3"), do: true
+  def is_digit("4"), do: true
+  def is_digit("5"), do: true
+  def is_digit("6"), do: true
+  def is_digit("7"), do: true
+  def is_digit("8"), do: true
+  def is_digit("9"), do: true
+  def is_digit(_), do: false
+
+  def word_to_digit("zero"), do: "0"
+  def word_to_digit("one"), do: "1"
+  def word_to_digit("two"), do: "2"
+  def word_to_digit("three"), do: "3"
+  def word_to_digit("four"), do: "4"
+  def word_to_digit("five"), do: "5"
+  def word_to_digit("six"), do: "6"
+  def word_to_digit("seven"), do: "7"
+  def word_to_digit("eight"), do: "8"
+  def word_to_digit("nine"), do: "9"
+end
+```
+
+## Part 1
+
+```elixir
+defmodule Part1 do
+  def calculate(input) do
+    input
+    |> Enum.map(&String.split(&1, "", trim: true))
+    |> Enum.map(fn line ->
+      Enum.filter(line, &Util.is_digit/1)
+    end)
+    |> Enum.map(fn line ->
+      List.first(line) <> List.last(line)
+    end)
+    |> Enum.map(&Util.parse_number/1)
+    |> Enum.sum()
+  end
+end
+```
+
+```elixir
+Part1.calculate(input_example)
+```
+
+```elixir
+Part1.calculate(input)
+```
+
+## Part 2
+
+```elixir
+defmodule Part2 do
+  @replacements [
+    {"one", "one1one"},
+    {"two", "two2two"},
+    {"three", "three3three"},
+    {"four", "four4four"},
+    {"five", "five5five"},
+    {"six", "six6six"},
+    {"seven", "seven7seven"},
+    {"eight", "eight8eight"},
+    {"nine", "nine9nine"}
+  ]
+
+  def replace_words_with_numbers(input) do
+    for {word, worse_word} <- @replacements, reduce: input do
+      str -> String.replace(str, word, worse_word)
+    end
+  end
+
+  def calculate(input) do
+    input
+    |> Enum.map(&replace_words_with_numbers/1)
+    |> Part1.calculate()
+  end
+end
+```
+
+```elixir
+Part2.calculate(input_example_2)
+```
+
+```elixir
+Part2.calculate(input)
+```
+
+<!-- livebook:{"offset":2725,"stamp":{"token":"XCP.k4bAkaJs4vG2CLyaCEZ3DYJ7Qt9NLg3ZHK_Y-_oVd8x5xS8M6sd3KbTH-aBl0IqaGQ3WqFCMvc2xizSOAP8Vj85JCxcJLq7jQjxNCAcplgCQAo1uHtU","version":2}} -->
