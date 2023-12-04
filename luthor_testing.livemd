@@ -1,0 +1,39 @@
+# Luthor Testing
+
+```elixir
+Mix.install([
+  {:lex_luthor, "~> 0.1.3"}
+])
+```
+
+## Simple String
+
+```elixir
+defmodule StringLexer do
+  use LexLuthor
+
+  defrule(~r/^'/, fn _ -> :STRING end)
+  defrule(~r/^[^']+/, :STRING, fn e -> {:string, e} end)
+  defrule(~r/^'/, :STRING, fn _ -> nil end)
+end
+```
+
+```elixir
+StringLexer.lex("'hello''world'")
+```
+
+## Simple Expression
+
+```elixir
+defmodule ElixirLexer do
+  use LexLuthor
+
+  defrule(~r/^\(/, fn _ -> :PAREN end)
+  defrule(~r/^[^\)]+/, :PAREN, fn e -> {:paren, e} end)
+  defrule(~r/^\)/, :PAREN, fn _ -> nil end)
+end
+```
+
+```elixir
+ElixirLexer.lex("(aaa)")
+```

@@ -1,0 +1,71 @@
+# NimbleParsec Testing
+
+```elixir
+Mix.install([
+  {:nimble_parsec, "~> 1.4"}
+])
+```
+
+## Time Parser
+
+```elixir
+defmodule TimeParser do
+  import NimbleParsec
+
+  date =
+    integer(4)
+    |> ignore(string("-"))
+    |> integer(2)
+    |> ignore(string("-"))
+    |> integer(2)
+
+  time =
+    integer(2)
+    |> ignore(string(":"))
+    |> integer(2)
+    |> ignore(string(":"))
+    |> integer(2)
+    |> optional(string("Z"))
+
+  defparsec(:datetime, tag(date, :date) |> ignore(string("T")) |> concat(tag(time, :time)))
+end
+
+TimeParser.datetime("2010-04-17T14:12:34Z")
+```
+
+## AOC 2023 Day 1 Part 1
+
+```elixir
+defmodule Day1 do
+  import NimbleParsec
+
+  digit = ascii_string([?0..?9], 1)
+
+  number =
+    choice([
+      string("zero"),
+      string("one"),
+      string("two"),
+      string("three"),
+      string("four"),
+      string("five"),
+      string("six"),
+      string("seven"),
+      string("eight"),
+      string("nine")
+    ])
+
+  letter = ascii_string([?a..?z], 1) |> ignore
+
+  line = choice([number, digit, letter]) |> repeat |> ignore(string("\n"))
+
+  defparsec(:parse, line |> repeat)
+end
+
+Day1.parse("""
+1abc2
+pqr3stu8vwx
+a1b2c3d4e5f
+treb7uchet
+""")
+```
